@@ -8,7 +8,7 @@
 class AStar {
 public:
     static std::vector<int> findPath(int from, int to,
-                                   std::function<double(double, double)> heuristic,
+                                   std::function<int(int, int)> heuristic,
                                    const Graph& graph);
 };
 
