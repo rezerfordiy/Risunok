@@ -4,7 +4,7 @@
 #include <functional>
 
 
-std::vector<int> AStar::findPath(int from, int to, std::function<double(double, double)> f, Graph const& g) {
+std::vector<int> AStar::findPath(int from, int to, std::function<int(int, int)> f, Graph const& g) {
     
     auto cmp = [](std::pair<int, int> left, std::pair<int, int> right) {return left.first > left.second; };
     std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, decltype(cmp)> q(cmp);
