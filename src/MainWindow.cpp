@@ -139,7 +139,7 @@ void MainWindow::drawGraph() {
 }
 
 void MainWindow::drawPath() {
-    std::function<double(double, double)> return_zero = [](double a, double b) {return 0;};
+    std::function<int(int, int)> return_zero = [](int a, int b) {return 0;};
     auto v = AStar::findPath(0, g.ptrs.size() - 1, return_zero, g);
     g.lenOfWay = v[v.size() - 1];
     if (!v.empty()) {
