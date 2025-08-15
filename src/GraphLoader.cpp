@@ -1,8 +1,8 @@
-#include "Graph.h"
 #include "GraphLoader.h"
-#include <iostream>
-#include <fstream>
-#include <cmath>
+#include <iostream> // for std::cout
+#include <fstream> // for read
+
+
 int GraphLoader::load(std::string const& s, Graph* g) {
     g->ptrs.clear();
     g->edges.clear();

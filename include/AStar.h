@@ -2,8 +2,8 @@
 #define ASTAR_H
 
 #include "Graph.h"
-#include <vector>
-#include <functional>
+#include <functional> //need 12
+
 
 class AStar {
 public:

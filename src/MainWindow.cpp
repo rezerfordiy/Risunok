@@ -1,6 +1,5 @@
 #include "MainWindow.h"
 #include "AStar.h"
-#include "Graph.h"
 #include <QGraphicsView>
 #include <QGraphicsEllipseItem>
 #include <QGraphicsLineItem>
@@ -12,18 +11,19 @@
 #include "GraphLoader.h"
 
 
-MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
+MainWindow::MainWindow(QWidget *parent) : QWidget(parent), view(new QGraphicsView(this)),
+btnLoad(new QPushButton("READ input.txt", this)), btnShowPath(new QPushButton("SHOW/HIDE", this)),
+graphGroup(new QGraphicsItemGroup), pathGroup(new QGraphicsItemGroup),
+scene(new QGraphicsScene(this)) {
 
     QHBoxLayout *mainLayout = new QHBoxLayout(this);
     
-    view = new QGraphicsView(this);
     view->setRenderHint(QPainter::Antialiasing);
     mainLayout->addWidget(view, 1);
     
     QVBoxLayout *buttonLayout = new QVBoxLayout();
     
-    btnLoad = new QPushButton("READ input.txt", this);
-    btnShowPath = new QPushButton("SHOW/HIDE", this);
+
     
     buttonLayout->addWidget(btnLoad);
     buttonLayout->addWidget(btnShowPath);
@@ -35,8 +35,7 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
     connect(btnShowPath, &QPushButton::clicked, this, &MainWindow::onShowHideButtonClicked);
     
     
-    scene = new QGraphicsScene(this);
-    scene->setSceneRect(-30, -30, 800, 400);
+    scene->setSceneRect(-30, -30, 830, 430);
 
     view->setScene(scene);
     view->setRenderHint(QPainter::Antialiasing);
@@ -44,12 +43,9 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
     view->setOptimizationFlags(QGraphicsView::DontAdjustForAntialiasing);
         
     
-    graphGroup = new QGraphicsItemGroup;
-    pathGroup = new QGraphicsItemGroup;
     scene->addItem(graphGroup);
     scene->addItem(pathGroup);
     
-    g = Graph();
 }
 
 
@@ -57,7 +53,7 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
 void MainWindow::onLoadButtonClicked() {
     clearScene();
     QString exePath = QCoreApplication::applicationDirPath();
-    QString localPath = exePath + "/../../../input.txt";
+    QString localPath = exePath + "/input.txt";
     int res = GraphLoader::load(localPath.toStdString(), &g);
     if (res != 0) {
         std::string s = std::string("BAD FILE, code ") + std::to_string(res);

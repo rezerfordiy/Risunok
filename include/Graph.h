@@ -1,14 +1,12 @@
 
 #ifndef GRAPH_H
 #define GRAPH_H
-#include <vector>
-#include <utility>
-#include <string>
-#include <queue>
+#include <vector> // need
+#include <utility> //need for std::pair
 class Graph {
 public:
-    int WIDTH = 400;
-    int HEIGHT = 200;
+    int WIDTH = 800;
+    int HEIGHT = 400;
     int cities = -1;
     int lenOfWay = -1;
 private:

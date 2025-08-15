@@ -2,10 +2,6 @@
 #define GRAPHLOADER_H
 
 #include "Graph.h"
-#include <iostream>
-#include <fstream>
-#include <cmath>
-#include <queue>
 
 
 class GraphLoader {

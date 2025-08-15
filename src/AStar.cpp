@@ -1,12 +1,11 @@
-#include "Graph.h"
 #include "AStar.h"
-#include <vector>
-#include <functional>
+#include <queue> // need 12
+
 
 
 std::vector<int> AStar::findPath(int from, int to, std::function<int(int, int)> f, Graph const& g) {
     
-    auto cmp = [](std::pair<int, int> left, std::pair<int, int> right) {return left.first > left.second; };
+    auto cmp = [](std::pair<int, int> left, std::pair<int, int> right) {return left.second > right.second; };
     std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, decltype(cmp)> q(cmp);
     q.push({ from, 0 });
 

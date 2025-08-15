@@ -37,7 +37,7 @@ MOVE          = mv -f
 TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = MyApp1.0.0
-DISTDIR = /Users/artemginsburg/Desktop/proj/test/.tmp/MyApp1.0.0
+DISTDIR = /Users/artemginsburg/Desktop/proj/test_git/Risunok/.tmp/MyApp1.0.0
 LINK          = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++
 LFLAGS        = -stdlib=libc++ -headerpad_max_install_names $(EXPORT_ARCH_ARGS) -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk -mmacosx-version-min=14.0 -Wl,-rpath,@executable_path/../Frameworks -Wl,-rpath,/opt/homebrew/lib
 LIBS          = $(SUBLIBS) -F/opt/homebrew/lib -framework QtWidgets -framework QtGui -framework AppKit -framework ImageIO -framework Metal -framework QtCore -framework IOKit -framework DiskArbitration -framework UniformTypeIdentifiers -framework AGL -framework OpenGL   
@@ -406,7 +406,6 @@ DIST          = /opt/homebrew/share/qt/mkspecs/features/spec_pre.prf \
 		/opt/homebrew/share/qt/mkspecs/features/qt_config.prf \
 		/opt/homebrew/share/qt/mkspecs/macx-clang/qmake.conf \
 		/opt/homebrew/share/qt/mkspecs/features/spec_post.prf \
-		.qmake.stash \
 		/opt/homebrew/share/qt/mkspecs/features/exclusive_builds.prf \
 		/opt/homebrew/share/qt/mkspecs/features/mac/sdk.prf \
 		/opt/homebrew/share/qt/mkspecs/features/toolchain.prf \
@@ -437,7 +436,8 @@ DIST          = /opt/homebrew/share/qt/mkspecs/features/spec_pre.prf \
 		/opt/homebrew/share/qt/mkspecs/features/lex.prf \
 		Make.pro include/MainWindow.h \
 		include/Graph.h \
-		include/AStar.h src/main.cpp \
+		include/AStar.h \
+		include/GraphLoader.h src/main.cpp \
 		src/MainWindow.cpp \
 		src/Graph.cpp \
 		src/AStar.cpp \
@@ -450,12 +450,12 @@ TARGET        = MyApp.app/Contents/MacOS/MyApp
 EXPORT_QMAKE_MAC_SDK = macosx
 EXPORT_QMAKE_MAC_SDK_VERSION = 15.5
 EXPORT_QMAKE_XCODE_DEVELOPER_PATH = /Applications/Xcode.app/Contents/Developer
-EXPORT__QMAKE_STASH_ = /Users/artemginsburg/Desktop/proj/test/.qmake.stash
+EXPORT__QMAKE_STASH_ = 
 EXPORT_VALID_ARCHS = arm64
 EXPORT_DEFAULT_ARCHS = arm64
 EXPORT_ARCHS = $(filter $(EXPORT_VALID_ARCHS), $(if $(ARCHS), $(ARCHS), $(if $(EXPORT_DEFAULT_ARCHS), $(EXPORT_DEFAULT_ARCHS), $(EXPORT_VALID_ARCHS))))
 EXPORT_ARCH_ARGS = $(foreach arch, $(if $(EXPORT_ARCHS), $(EXPORT_ARCHS), $(EXPORT_VALID_ARCHS)), -arch $(arch))
-EXPORT__PRO_FILE_ = /Users/artemginsburg/Desktop/proj/test/Make.pro
+EXPORT__PRO_FILE_ = /Users/artemginsburg/Desktop/proj/test_git/Risunok/Make.pro
 
 
 include /opt/homebrew/Cellar/qt/6.9.1/share/qt/mkspecs/features/mac/sdk.mk
@@ -465,6 +465,7 @@ first: all
 MyApp.app/Contents/MacOS/MyApp:  $(OBJECTS)  
 	@test -d MyApp.app/Contents/MacOS/ || mkdir -p MyApp.app/Contents/MacOS/
 	$(LINK) $(LFLAGS) -o $(TARGET)  $(OBJECTS) $(OBJCOMP) $(LIBS)
+	mkdir -p /Users/artemginsburg/Desktop/proj/test_git/Risunok/MyApp.app/Contents/MacOS && cp -f /Users/artemginsburg/Desktop/proj/test_git/Risunok/input.txt /Users/artemginsburg/Desktop/proj/test_git/Risunok/MyApp.app/Contents/MacOS/
 
 Makefile: Make.pro /opt/homebrew/share/qt/mkspecs/macx-clang/qmake.conf /opt/homebrew/share/qt/mkspecs/features/spec_pre.prf \
 		/opt/homebrew/share/qt/mkspecs/features/device_config.prf \
@@ -809,7 +810,6 @@ Makefile: Make.pro /opt/homebrew/share/qt/mkspecs/macx-clang/qmake.conf /opt/hom
 		/opt/homebrew/share/qt/mkspecs/features/qt_config.prf \
 		/opt/homebrew/share/qt/mkspecs/macx-clang/qmake.conf \
 		/opt/homebrew/share/qt/mkspecs/features/spec_post.prf \
-		.qmake.stash \
 		/opt/homebrew/share/qt/mkspecs/features/exclusive_builds.prf \
 		/opt/homebrew/share/qt/mkspecs/features/mac/sdk.prf \
 		/opt/homebrew/share/qt/mkspecs/features/toolchain.prf \
@@ -1186,7 +1186,6 @@ Makefile: Make.pro /opt/homebrew/share/qt/mkspecs/macx-clang/qmake.conf /opt/hom
 /opt/homebrew/share/qt/mkspecs/features/qt_config.prf:
 /opt/homebrew/share/qt/mkspecs/macx-clang/qmake.conf:
 /opt/homebrew/share/qt/mkspecs/features/spec_post.prf:
-.qmake.stash:
 /opt/homebrew/share/qt/mkspecs/features/exclusive_builds.prf:
 /opt/homebrew/share/qt/mkspecs/features/mac/sdk.prf:
 /opt/homebrew/share/qt/mkspecs/features/toolchain.prf:
@@ -1244,7 +1243,7 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /opt/homebrew/share/qt/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents include/MainWindow.h include/Graph.h include/AStar.h $(DISTDIR)/
+	$(COPY_FILE) --parents include/MainWindow.h include/Graph.h include/AStar.h include/GraphLoader.h $(DISTDIR)/
 	$(COPY_FILE) --parents src/main.cpp src/MainWindow.cpp src/Graph.cpp src/AStar.cpp src/GraphLoader.cpp $(DISTDIR)/
 
 
@@ -1255,7 +1254,6 @@ clean: compiler_clean
 
 distclean: clean 
 	-$(DEL_FILE) -r MyApp.app
-	-$(DEL_FILE) .qmake.stash
 	-$(DEL_FILE) Makefile
 
 
@@ -1293,7 +1291,7 @@ moc_MainWindow.cpp: include/MainWindow.h \
 		include/Graph.h \
 		moc_predefs.h \
 		/opt/homebrew/share/qt/libexec/moc
-	/opt/homebrew/share/qt/libexec/moc $(DEFINES) --include /Users/artemginsburg/Desktop/proj/test/moc_predefs.h -I/opt/homebrew/share/qt/mkspecs/macx-clang -I/Users/artemginsburg/Desktop/proj/test -I/Users/artemginsburg/Desktop/proj/test/include -I/opt/homebrew/lib/QtWidgets.framework/Headers -I/opt/homebrew/lib/QtGui.framework/Headers -I/opt/homebrew/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/opt/homebrew/lib include/MainWindow.h -o moc_MainWindow.cpp
+	/opt/homebrew/share/qt/libexec/moc $(DEFINES) --include /Users/artemginsburg/Desktop/proj/test_git/Risunok/moc_predefs.h -I/opt/homebrew/share/qt/mkspecs/macx-clang -I/Users/artemginsburg/Desktop/proj/test_git/Risunok -I/Users/artemginsburg/Desktop/proj/test_git/Risunok/include -I/opt/homebrew/lib/QtWidgets.framework/Headers -I/opt/homebrew/lib/QtGui.framework/Headers -I/opt/homebrew/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/opt/homebrew/lib include/MainWindow.h -o moc_MainWindow.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -1353,12 +1351,12 @@ MainWindow.o: src/MainWindow.cpp include/MainWindow.h \
 Graph.o: src/Graph.cpp include/Graph.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Graph.o src/Graph.cpp
 
-AStar.o: src/AStar.cpp include/Graph.h \
-		include/AStar.h
+AStar.o: src/AStar.cpp include/AStar.h \
+		include/Graph.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o AStar.o src/AStar.cpp
 
-GraphLoader.o: src/GraphLoader.cpp include/Graph.h \
-		include/GraphLoader.h
+GraphLoader.o: src/GraphLoader.cpp include/GraphLoader.h \
+		include/Graph.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o GraphLoader.o src/GraphLoader.cpp
 
 moc_MainWindow.o: moc_MainWindow.cpp 

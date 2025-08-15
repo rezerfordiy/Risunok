@@ -8,6 +8,11 @@
 
 class QGraphicsView;
 class QPushButton;
+class QGraphicsScene;
+class QGraphicsItemGroup;
+
+// для Graph не надо forward declaration тк там по значению
+
 
 class MainWindow : public QWidget {
     Q_OBJECT

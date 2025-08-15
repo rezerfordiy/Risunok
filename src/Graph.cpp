@@ -1,9 +1,8 @@
 #include "Graph.h"
-#include <iostream>
-#include <fstream>
-#include <cmath>
-#include <queue>
-
+#include <fstream> // need for read
+#include <cmath> // need for math
+#include <queue> // need for 268
+#include <iostream> // for std::cout
 
 Graph::info::Point& Graph::info::Point::operator+=(Point const& other) {
     x += other.x;
@@ -161,7 +160,7 @@ void Graph::process(int iters) {
                 info::Point normal = infos[v2].p - infos[v1].p;
                 double r_abs = normal.abs();
                 normal /= r_abs;
-                double force_abs = k * k / r_abs * r_abs;
+                double force_abs = k * k / (r_abs * r_abs);
                 info::Point force = normal * force_abs;
 
                 deltas[v2] += force;
@@ -236,7 +235,7 @@ void Graph::process2(int iters)
                 info::Point normal = infos[v2].p - infos[v1].p;
                 double r_abs = normal.abs();
                 normal /= r_abs;
-                double force_abs = k * k / r_abs * r_abs;
+                double force_abs = k * k / (r_abs * r_abs);
                 info::Point force = normal * force_abs;
 
                 deltas[v2] += force;
