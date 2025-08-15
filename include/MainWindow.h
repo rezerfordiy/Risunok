@@ -28,7 +28,10 @@ private:
     void drawGraph();
     void drawPath();
     void clearScene();
-
+    void drawGraphWithShift(Graph::info::Point shft, Graph& gr);
+    void drawPathWithShift(Graph::info::Point shft, Graph& gr, std::vector<int> const& way);
+    
+    
     QGraphicsScene* scene;
     QGraphicsView* view;
     QGraphicsItemGroup* graphGroup;
@@ -37,6 +40,7 @@ private:
     QPushButton* btnShowPath;
     
     Graph g;
+    std::vector<Graph> splited;
 };
 
 #endif // MAINWINDOW_H

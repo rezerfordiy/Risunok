@@ -1,14 +1,15 @@
-
 #ifndef GRAPH_H
 #define GRAPH_H
 #include <vector> // need
 #include <utility> //need for std::pair
+#include <string>
 class Graph {
 public:
     int WIDTH = 800;
     int HEIGHT = 400;
     int cities = -1;
     int lenOfWay = -1;
+    bool fromSplit = false;
 private:
     bool is_checked_connected = false;
     bool is_conn = false;
@@ -45,8 +46,8 @@ public:
     std::vector<int> ptrs;
     std::vector<std::pair<int, int>> edges;
     std::vector<info> infos;
+    std::vector<int> oldNames;
 
-   
 
 
     int read_from_file(std::string const& s);
@@ -57,6 +58,7 @@ public:
     bool is_connected();
     std::vector<Graph> split();
     void show() const;
+    void clear();
 };
 
 #endif // GRAPH_H

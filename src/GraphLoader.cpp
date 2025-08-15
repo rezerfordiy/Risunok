@@ -4,9 +4,10 @@
 
 
 int GraphLoader::load(std::string const& s, Graph* g) {
-    g->ptrs.clear();
-    g->edges.clear();
-    g->infos.clear();
+    
+    g->clear();
+    
+    
     std::ifstream in(s);
     if (!in.is_open()) {
         //std::cout << "\nCANT OPEN\n" << std::endl;

@@ -313,10 +313,10 @@ std::vector<Graph> Graph::split() {
     // spaces = pow(2, spaces);
 
     int slice_w = spaces / 2 + spaces % 2;
+
+
+
     int slice_h = spaces / 2;
-
-
-
     int numNodes = ptrs.size();
 
     struct helper {
@@ -328,8 +328,8 @@ std::vector<Graph> Graph::split() {
 
 
     std::vector<Graph> ans(pow(2, spaces));
-    
-    
+
+
     for (int v = 0; v < numNodes; v++) {
         int city = infos[v].group - 1;
         int& cnt = helpers[city].cnt;
@@ -346,6 +346,8 @@ std::vector<Graph> Graph::split() {
         ans[city].ptrs.push_back(cnt);
         ans[city].infos.push_back(infos[v]);
         helpers[city].map[v] = ans[city].ptrs.size() - 1;
+        ans[city].oldNames.push_back(v);
+
 
         int bound = ((v == numNodes - 1) ? (edges.size()) : (ptrs[v + 1]));
         for (int edge_cnt = ptrs[v]; edge_cnt < bound; edge_cnt++) {
@@ -357,15 +359,23 @@ std::vector<Graph> Graph::split() {
 
     }
 
+
+
+    int new_w = this->WIDTH / pow(2, slice_w), new_h = this->HEIGHT / pow(2, slice_h);
+
     for (int i = 0; i < cities; i++) {
         for (int j = 0; j < ans[i].edges.size(); j++) {
             int old = ans[i].edges[j].first;
             ans[i].edges[j].first = helpers[i].map[old];
         }
+        ans[i].fromSplit = true;
+        ans[i].WIDTH = new_w;
+        ans[i].HEIGHT = new_h;
     }
 
     return ans;
 }
+
 
 void Graph::show() const {
     using namespace std;
@@ -382,6 +392,17 @@ void Graph::show() const {
         cout << edges[i].second << ' ';
     }
     cout << endl;
+}
+
+void Graph::clear() {
+    ptrs.clear();
+    edges.clear();
+    infos.clear();
+    cities = -1;
+    lenOfWay = -1;
+    is_checked_connected = false;
+    is_conn = false;
+    
 }
 
 

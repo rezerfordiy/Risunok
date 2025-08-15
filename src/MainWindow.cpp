@@ -62,14 +62,55 @@ void MainWindow::onLoadButtonClicked() {
                                 s.c_str());
     } else {
         g.init_info();
-        g.process2(100);
-        drawGraph();
-        drawPath();
-    }
-    
-    
-    
-    
+        bool is_conn = g.is_connected();
+  
+        
+        if (!is_conn) {
+            std::function<int(int, int)> return_zero = [](int a, int b) {return 0;};
+            auto way = AStar::findPath(0, g.ptrs.size() - 1, return_zero, g);
+            int cityWithPath = -1;
+            if (!way.empty()) {
+                cityWithPath = g.infos[way[0]].group - 1;
+            } else {
+                QMessageBox::information(nullptr,
+                                            "Path Finding",
+                                            "No path found between nodes!");
+            }
+            
+            
+            
+            
+            
+            splited = g.split();
+            Graph::info::Point cords = { 0, 0 };
+        
+            int stepW = splited[0].WIDTH, stepH = splited[0].HEIGHT;
+            int cnt = 0;
+            for (cords.y = 0; cords.y < g.HEIGHT && cnt < g.cities; cords.y += stepH) {
+                for (cords.x = 0; cords.x < g.WIDTH && cnt < g.cities; cords.x += stepW) {
+                    splited[cnt].init_info();
+                    splited[cnt].process2(100);
+                    drawGraphWithShift(cords, splited[cnt]);
+                    if (cnt ==cityWithPath) {
+                        drawPathWithShift(cords, splited[cnt], way);
+                    }
+                    
+                    cnt++;
+                }
+             
+            }
+
+
+
+            } else {
+                g.init_info();
+                g.process2(100);
+                drawGraph();
+                drawPath();
+            }
+        
+        }
+
 }
 
 void MainWindow::onShowHideButtonClicked() {
@@ -158,6 +199,99 @@ void MainWindow::drawPath() {
                                     "No path found between nodes!");
     }
 }
+
+void MainWindow::drawGraphWithShift(Graph::info::Point shft, Graph& gr) {
+    int numNodes = gr.ptrs.size();
+    std::vector<std::vector<int>> connections(numNodes, std::vector<int>(numNodes, -1));
+    
+    
+    for (int v = 0; v < numNodes; v++) {
+        
+        Graph::info::Point pv = gr.infos[v].p + shft;
+        
+        QGraphicsEllipseItem *point = new QGraphicsEllipseItem(0, 0, 10, 10);
+        point->setPos((int)pv.x, (int)pv.y);
+        point->setBrush(Qt::black);
+        
+        QGraphicsTextItem *label = new QGraphicsTextItem("Point " + QString::number(gr.oldNames[v]));
+        label->setParentItem(point);
+        
+        graphGroup->addToGroup(point);
+        
+        int bound = ((v == numNodes - 1) ? (gr.edges.size()) : (gr.ptrs[v + 1]));
+        for (int edge_cnt = gr.ptrs[v]; edge_cnt < bound; edge_cnt++) {
+            int u = gr.edges[edge_cnt].first;
+            int dist = gr.edges[edge_cnt].second;
+            connections[v][u] = dist;
+            if (connections[u][v] == -1) {
+                continue;
+            }
+            Graph::info::Point pu = gr.infos[u].p + shft;
+            
+            QGraphicsLineItem *line = new QGraphicsLineItem((int)pv.x + 5, (int)pv.y + 5, (int)pu.x + 5, (int)pu.y + 5);
+            line->setPen(QPen(Qt::black, 2));
+            
+            QString txt;
+            if (connections[v][u] == connections[u][v]) {
+                txt = QString::number(connections[v][u]);
+            } else {
+                if (v == fmin(u, v)) {
+                    txt = "(" + QString::number(connections[v][u]) +  ", " + QString::number(connections[u][v]) + ")";
+                } else {
+                    txt = "(" + QString::number(connections[u][v]) +  ", " + QString::number(connections[v][u]) + ")";
+
+                }
+            }
+            
+            QGraphicsTextItem *lbl = new QGraphicsTextItem(txt);
+            lbl->setParentItem(line);
+            
+            Graph::info::Point mid = (pv + pu) / 2;
+            lbl->setPos((int)mid.x, (int)mid.y );
+
+            
+            graphGroup->addToGroup(line);
+            
+            
+        }
+    }
+}
+
+void MainWindow::drawPathWithShift(Graph::info::Point shft, Graph& gr, std::vector<int> const& way) {
+    gr.lenOfWay = way[way.size() - 1];
+    
+    
+    // по договоренности
+    int mx = way[0];
+    std::vector<int> translate(mx + 1);
+    for (int i = 0; i < gr.oldNames.size(); i++) {
+        translate[gr.oldNames[i]] = i;
+    }
+    std::vector<int> v = way;
+    for (int i = 0; i < v.size() - 1; i++) {
+        v[i] = translate[v[i]];
+    }
+    
+    for (int i = 0; i < v.size() - 1; i++) {
+        Graph::info::Point p = gr.infos[v[i]].p + shft;
+        if (i != 0) {
+            Graph::info::Point pred = gr.infos[v[i - 1]].p + shft;
+            QGraphicsLineItem *line = new QGraphicsLineItem((int)pred.x + 5, (int)pred.y + 5, (int)p.x + 5, (int)p.y + 5);
+                line->setPen(QPen(Qt::red, 2));
+                pathGroup->addToGroup(line);
+        }
+        QGraphicsEllipseItem *point = new QGraphicsEllipseItem(0, 0, 10, 10);
+        point->setPos((int)p.x, (int)p.y);
+        point->setBrush(Qt::red);
+        pathGroup->addToGroup(point);
+    }
+
+}
+
+
+
+
+
 
 
 
