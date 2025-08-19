@@ -35,7 +35,7 @@ public:
 
             double abs() const;
             bool little() const;
-            void fit(double max_size);
+            void fit(double maxSize);
             void bounds(Point const& from, Point const& to);
         };
         Point p;
