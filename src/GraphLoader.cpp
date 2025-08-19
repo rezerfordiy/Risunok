@@ -4,14 +4,13 @@
 
 
 int GraphLoader::load(std::string const& s, Graph* g) {
+        std::ifstream in(s);
+    if (!in.is_open()) {
+        return -1;
+    }
     g->ptrs.clear();
     g->edges.clear();
     g->infos.clear();
-    std::ifstream in(s);
-    if (!in.is_open()) {
-        //std::cout << "\nCANT OPEN\n" << std::endl;
-        return -1;
-    }
     int x;
     in >> x;
     do {
@@ -31,18 +30,5 @@ int GraphLoader::load(std::string const& s, Graph* g) {
     }
     in.close();
 
-#ifdef DEBUG
-    std::cout << "READING\n";
-    for (int i = 0; i < ptrs.size(); i++) {
-        std::cout << ptrs[i] << std::endl;
-    }
-    for (int i = 0; i < edges.size(); i++) {
-        std::cout << edges[i].first << ' ' << edges[i].second << std::endl;
-    }
-    std::cout << "END\n";
-#endif
-
     return k != g->edges.size();
-    
-    
 }

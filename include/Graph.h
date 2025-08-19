@@ -10,8 +10,8 @@ public:
     int cities = -1;
     int lenOfWay = -1;
 private:
-    bool is_checked_connected = false;
-    bool is_conn = false;
+    bool isCheckedConnected = false;
+    bool isConn = false;
 public:
 
 
@@ -49,12 +49,12 @@ public:
    
 
 
-    int read_from_file(std::string const& s);
-    void init_info();
+    int readFromFile(std::string const& s);
+    void initInfo();
     void process(int iters = 1);
-    void process2(int iters = 1);
+    void processBetterVersion(int iters = 1);
 
-    bool is_connected();
+    bool isConnected();
     std::vector<Graph> split();
     void show() const;
 };

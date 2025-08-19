@@ -1,17 +1,17 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QWidget>
-#include <QGraphicsScene>
-#include <QGraphicsItemGroup>
+#include <QWidget> // 100% must be; as heritage
 #include "Graph.h"
+
+
 
 class QGraphicsView;
 class QPushButton;
 class QGraphicsScene;
 class QGraphicsItemGroup;
 
-// для Graph не надо forward declaration тк там по значению
+// No need Forward Declaration for Graph because using by value
 
 
 class MainWindow : public QWidget {

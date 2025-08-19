@@ -12,7 +12,6 @@ std::vector<int> AStar::findPath(int from, int to, std::function<int(int, int)> 
     std::vector<std::pair<int, int>> distances(g.ptrs.size(), { -1, -1 }); // best_dist, from
     distances[from].first = 0;
 
-    
     while (!q.empty()) {
         int v = q.top().first;
         int d = q.top().second;
@@ -20,7 +19,6 @@ std::vector<int> AStar::findPath(int from, int to, std::function<int(int, int)> 
 
         if (v == to) {
             break;
-        
         }
 
         int cnt = g.ptrs[v];
@@ -32,17 +30,14 @@ std::vector<int> AStar::findPath(int from, int to, std::function<int(int, int)> 
             bound = g.ptrs[v + 1];
         }
         while (cnt < bound) {
-            
             int neighbor = g.edges[cnt].first;
             int new_dist = d + g.edges[cnt].second + f(to, neighbor);
-
             if (distances[neighbor].first == -1 || distances[neighbor].first > new_dist) {
                 distances[neighbor].first = new_dist;
                 distances[neighbor].second = v;
                 q.push({ neighbor, new_dist });
 
             }
-                        
             cnt++;
         }
 
@@ -51,7 +46,6 @@ std::vector<int> AStar::findPath(int from, int to, std::function<int(int, int)> 
     if (distances[to].first == -1) {
         return {};
     }
-
     std::vector<int> path;
     int cnt = to;
     while (cnt != from) {

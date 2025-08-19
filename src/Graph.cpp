@@ -56,10 +56,10 @@ bool Graph::info::Point::little() const {
     return x < 1e-9 && y < 1e-9;
 }
 
-void Graph::info::Point::fit(double max_size) {
+void Graph::info::Point::fit(double maxSize) {
     double len = abs();
     (*this).operator/=(len);
-    len = std::min(abs(), max_size);
+    len = std::min(abs(), maxSize);
     this->operator*=(len);
 }
 
@@ -68,7 +68,7 @@ void Graph::info::Point::bounds(Point const& from, Point const& to) {
     y = std::min(to.y, std::max(y, from.y));
 }
 
-int Graph::read_from_file(std::string const& s) {
+int Graph::readFromFile(std::string const& s) {
     ptrs.clear();
     edges.clear();
     infos.clear();
@@ -95,22 +95,10 @@ int Graph::read_from_file(std::string const& s) {
         edges[k++].second = x;
     }
     in.close();
-
-#ifdef DEBUG
-    std::cout << "READING\n";
-    for (int i = 0; i < ptrs.size(); i++) {
-        std::cout << ptrs[i] << std::endl;
-    }
-    for (int i = 0; i < edges.size(); i++) {
-        std::cout << edges[i].first << ' ' << edges[i].second << std::endl;
-    }
-    std::cout << "END\n";
-#endif
-
     return k != edges.size();
 }
 
-void Graph::init_info() {
+void Graph::initInfo() {
     infos.resize(ptrs.size());
     for (int i = 0; i < infos.size(); i++) {
         infos[i].p = { (double)(rand() % (WIDTH + 1)), (double)(rand() % (HEIGHT + 1)) };
@@ -121,7 +109,6 @@ void Graph::process(int iters) {
     double k = sqrt((double)WIDTH * HEIGHT / infos.size());
     double scale = std::max(WIDTH, HEIGHT) / (double)2;
     double T = scale / 10;
-
     int numNodes = ptrs.size();
 
     for (int i = 0; i < iters; i++) {
@@ -131,37 +118,34 @@ void Graph::process(int iters) {
         std::vector<std::vector<bool>> visited(numNodes, std::vector<bool>(numNodes, false));
         for (int v = 0; v < numNodes; v++) {
             int bound = ((v == (numNodes - 1)) ? edges.size() : ptrs[v + 1]);
-#ifdef DEBUG
-            //cout << "BOUND: " << bound << endl;
-#endif
 
-            for (int edge_cnt = ptrs[v]; edge_cnt < bound; edge_cnt++) {
-                int dist = edges[edge_cnt].second;
-                int neighbor = edges[edge_cnt].first;
+            for (int edgeCnt = ptrs[v]; edgeCnt < bound; edgeCnt++) {
+                int dist = edges[edgeCnt].second;
+                int neighbor = edges[edgeCnt].first;
                 if (visited[v][neighbor]) {
                     continue;
                 }
                 visited[v][neighbor] = visited[neighbor][v] = 1;
 
                 info::Point normal = infos[neighbor].p - infos[v].p;
-                double r_abs = normal.abs();
-                normal /= r_abs;
-                double force_abs = r_abs * r_abs / k;
-                info::Point force = normal * force_abs;
+                double rAbs = normal.abs();
+                normal /= rAbs;
+                double forceAbs = rAbs * rAbs / k;
+                info::Point force = normal * forceAbs;
 
                 deltas[v] += force;
                 deltas[neighbor] -= force;
             }
         }
 
-        // отталкивание
+        // Repulsion
         for (int v1 = 0; v1 < numNodes - 1; v1++) {
             for (int v2 = v1 + 1; v2 < numNodes; v2++) {
                 info::Point normal = infos[v2].p - infos[v1].p;
-                double r_abs = normal.abs();
-                normal /= r_abs;
-                double force_abs = k * k / (r_abs * r_abs);
-                info::Point force = normal * force_abs;
+                double rAbs = normal.abs();
+                normal /= rAbs;
+                double forceAbs = k * k / (rAbs * rAbs);
+                info::Point force = normal * forceAbs;
 
                 deltas[v2] += force;
                 deltas[v1] -= force;
@@ -180,7 +164,7 @@ void Graph::process(int iters) {
 
 }
 
-void Graph::process2(int iters)
+void Graph::processBetterVersion(int iters)
 {
     if (lenOfWay == -1) {
         return;
@@ -190,53 +174,42 @@ void Graph::process2(int iters)
     double T = scale / 10;
     double diag = sqrt((double)WIDTH * WIDTH + HEIGHT * HEIGHT) + 1e-9;
     double koef = diag / lenOfWay;
-
-
-
-
-
-
-
-
     int numNodes = ptrs.size();
 
     for (int i = 0; i < iters; i++) {
         std::vector<info::Point> deltas(numNodes, { 0, 0 });
 
-        // Matrix not to count twice
+        // Matrix not to count twice force
         std::vector<std::vector<int>> visited(numNodes, std::vector<int>(numNodes, -1));
         for (int v = 0; v < numNodes; v++) {
             int bound = ((v == (numNodes - 1)) ? edges.size() : ptrs[v + 1]);
-#ifdef DEBUG
-            //cout << "BOUND: " << bound << endl;
-#endif
 
-            for (int edge_cnt = ptrs[v]; edge_cnt < bound; edge_cnt++) {
-                int dist = edges[edge_cnt].second;
-                int neighbor = edges[edge_cnt].first;
+            for (int edgeCnt = ptrs[v]; edgeCnt < bound; edgeCnt++) {
+                int dist = edges[edgeCnt].second;
+                int neighbor = edges[edgeCnt].first;
                 visited[v][neighbor] = dist;
                 if (visited[neighbor][v] == -1) {
                     continue;
                 }
                 
                 info::Point normal = infos[neighbor].p - infos[v].p;
-                double r_abs = normal.abs();
-                normal /= r_abs;
-                info::Point force = normal * (r_abs - koef * dist);
+                double rAbs = normal.abs();
+                normal /= rAbs;
+                info::Point force = normal * (rAbs - koef * dist);
 
                 deltas[v] += force;
                 deltas[neighbor] -= force;
             }
         }
 
-        // отталкивание
+        // Repulsion
         for (int v1 = 0; v1 < numNodes - 1; v1++) {
             for (int v2 = v1 + 1; v2 < numNodes; v2++) {
                 info::Point normal = infos[v2].p - infos[v1].p;
-                double r_abs = normal.abs();
-                normal /= r_abs;
-                double force_abs = k * k / (r_abs * r_abs);
-                info::Point force = normal * force_abs;
+                double rAbs = normal.abs();
+                normal /= rAbs;
+                double forceAbs = k * k / (rAbs * rAbs);
+                info::Point force = normal * forceAbs;
 
                 deltas[v2] += force;
                 deltas[v1] -= force;
@@ -255,9 +228,9 @@ void Graph::process2(int iters)
 
 }
 
-bool Graph::is_connected() {
-    if (this->is_checked_connected) {
-        return is_conn;
+bool Graph::isConnected() {
+    if (this->isCheckedConnected) {
+        return isConn;
     }
     int numNodes = ptrs.size();
     std::vector<int> conn(numNodes, 0);
@@ -272,8 +245,8 @@ bool Graph::is_connected() {
                 q.pop();
                 conn[u] = k;
                 int bound = ((u == numNodes - 1) ? (edges.size()) : (ptrs[u + 1]));
-                for (int edge_cnt = ptrs[u]; edge_cnt < bound; edge_cnt++) {
-                    int neighbor = edges[edge_cnt].first;
+                for (int edgeCnt = ptrs[u]; edgeCnt < bound; edgeCnt++) {
+                    int neighbor = edges[edgeCnt].first;
                     if (conn[neighbor] == 0) {
                         q.push(neighbor);
                     }
@@ -282,75 +255,53 @@ bool Graph::is_connected() {
         }
     }
     cities = k;
-    this->is_checked_connected = true;
+    this->isCheckedConnected = true;
 
     for (int i = 0; i < numNodes; i++) {
         infos[i].group = conn[i];
     }
 
-
     if (k == 1) {
-        is_conn = true;
+        isConn = true;
     }
 
-    return this->is_conn;
+    return this->isConn;
 }
 
 std::vector<Graph> Graph::split() {
-    if (!is_checked_connected) {
-        is_connected();
+    if (!isCheckedConnected) {
+        isConnected();
     }
-#ifndef DEBUG
     if (cities == 1) {
         return std::vector<Graph>{*this};
     }
-#endif // !DEBUG
 
     double tmp = log2(cities);
     int spaces = (int)tmp;
     if ((int)tmp != tmp) { spaces += 1; }
-
-    // spaces = pow(2, spaces);
-
-    int slice_w = spaces / 2 + spaces % 2;
-    int slice_h = spaces / 2;
-
-
-
+    int sliceW = spaces / 2 + spaces % 2;
+    int sliceH = spaces / 2;
     int numNodes = ptrs.size();
-
     struct helper {
         int cnt;
         std::vector<int> map;
     };
 
     std::vector<helper> helpers(cities, { 0, std::vector<int>(numNodes, -1) });
-
-
     std::vector<Graph> ans(pow(2, spaces));
-    
     
     for (int v = 0; v < numNodes; v++) {
         int city = infos[v].group - 1;
         int& cnt = helpers[city].cnt;
-
-#ifdef DEBUG
-        std::cout << "v: " << v << std::endl;
-        std::cout << "group: " << city << std::endl;
-        std::cout << "cnt: " << cnt << std::endl;
-
-#endif // DEBUG
-
-
 
         ans[city].ptrs.push_back(cnt);
         ans[city].infos.push_back(infos[v]);
         helpers[city].map[v] = ans[city].ptrs.size() - 1;
 
         int bound = ((v == numNodes - 1) ? (edges.size()) : (ptrs[v + 1]));
-        for (int edge_cnt = ptrs[v]; edge_cnt < bound; edge_cnt++) {
-            int neighbor = edges[edge_cnt].first;
-            int dist = edges[edge_cnt].second;
+        for (int edgeCnt = ptrs[v]; edgeCnt < bound; edgeCnt++) {
+            int neighbor = edges[edgeCnt].first;
+            int dist = edges[edgeCnt].second;
             ans[city].edges.push_back({ neighbor, dist });
             cnt++;
         }
@@ -383,19 +334,5 @@ void Graph::show() const {
     }
     cout << endl;
 }
-
-
-
-#ifdef DEBUG
-
-std::ostream& operator<<(std::ostream& out, Graph::info::Point const& p) {
-
-    out << "(" << p.x << ",\t" << p.y << ")";
-
-    return out;
-}
-
-#endif // DEBUG
-
 
 

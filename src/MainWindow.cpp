@@ -1,5 +1,6 @@
 #include "MainWindow.h"
 #include "AStar.h"
+#include "GraphLoader.h"
 #include <QGraphicsView>
 #include <QGraphicsEllipseItem>
 #include <QGraphicsLineItem>
@@ -8,7 +9,6 @@
 #include <QPushButton>
 #include <QMessageBox>
 #include <QCoreApplication>
-#include "GraphLoader.h"
 
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent), view(new QGraphicsView(this)),
@@ -17,18 +17,13 @@ graphGroup(new QGraphicsItemGroup), pathGroup(new QGraphicsItemGroup),
 scene(new QGraphicsScene(this)) {
 
     QHBoxLayout *mainLayout = new QHBoxLayout(this);
-    
     view->setRenderHint(QPainter::Antialiasing);
     mainLayout->addWidget(view, 1);
     
     QVBoxLayout *buttonLayout = new QVBoxLayout();
-    
-
-    
     buttonLayout->addWidget(btnLoad);
     buttonLayout->addWidget(btnShowPath);
     buttonLayout->addStretch();
-    
     mainLayout->addLayout(buttonLayout);
     
     connect(btnLoad, &QPushButton::clicked, this, &MainWindow::onLoadButtonClicked);
@@ -61,8 +56,8 @@ void MainWindow::onLoadButtonClicked() {
                                 "Error",
                                 s.c_str());
     } else {
-        g.init_info();
-        g.process2(100);
+        g.initInfo();
+        g.processBetterVersion(100);
         drawGraph();
         drawPath();
     }
@@ -81,9 +76,7 @@ void MainWindow::drawGraph() {
     int numNodes = g.ptrs.size();
     std::vector<std::vector<int>> connections(numNodes, std::vector<int>(numNodes, -1));
     
-    
     for (int v = 0; v < numNodes; v++) {
-        
         Graph::info::Point pv = g.infos[v].p;
         
         QGraphicsEllipseItem *point = new QGraphicsEllipseItem(0, 0, 10, 10);
@@ -96,9 +89,9 @@ void MainWindow::drawGraph() {
         graphGroup->addToGroup(point);
         
         int bound = ((v == numNodes - 1) ? (g.edges.size()) : (g.ptrs[v + 1]));
-        for (int edge_cnt = g.ptrs[v]; edge_cnt < bound; edge_cnt++) {
-            int u = g.edges[edge_cnt].first;
-            int dist = g.edges[edge_cnt].second;
+        for (int edgeCnt = g.ptrs[v]; edgeCnt < bound; edgeCnt++) {
+            int u = g.edges[edgeCnt].first;
+            int dist = g.edges[edgeCnt].second;
             connections[v][u] = dist;
             if (connections[u][v] == -1) {
                 continue;
@@ -116,7 +109,6 @@ void MainWindow::drawGraph() {
                     txt = "(" + QString::number(connections[v][u]) +  ", " + QString::number(connections[u][v]) + ")";
                 } else {
                     txt = "(" + QString::number(connections[u][v]) +  ", " + QString::number(connections[v][u]) + ")";
-
                 }
             }
             
@@ -126,17 +118,14 @@ void MainWindow::drawGraph() {
             Graph::info::Point mid = (pv + pu) / 2;
             lbl->setPos((int)mid.x, (int)mid.y );
 
-            
             graphGroup->addToGroup(line);
-            
-            
         }
     }
 }
 
 void MainWindow::drawPath() {
-    std::function<int(int, int)> return_zero = [](int a, int b) {return 0;};
-    auto v = AStar::findPath(0, g.ptrs.size() - 1, return_zero, g);
+    std::function<int(int, int)> returnZero = [](int a, int b) {return 0;};
+    auto v = AStar::findPath(0, g.ptrs.size() - 1, returnZero, g);
     g.lenOfWay = v[v.size() - 1];
     if (!v.empty()) {
         for (int i = 0; i < v.size() - 1; i++) {
@@ -178,8 +167,4 @@ void MainWindow::clearScene()
     }
 }
 
-//    QString filePath = QFileDialog::getOpenFileName(this,
-//                                                  "Выберите файл графа",
-//                                                  "",
-//                                                  "Text files (*.txt)");
-//
+
